@@ -1,5 +1,4 @@
 import React, {useState, useEffect} from 'react';
-// import LabelFields from './LabelFields';
 import Labels from './Labels';
 import { s3, params, docClient } from '../config/aws.config';
 
@@ -33,7 +32,7 @@ export default function LabelWrapper () {
       let dataFromS3;
       let lbl;
 
-      const [labelsFromDb, error] = await onRead()
+      const [labelsFromDb, error] = await listFiles()
       if(error) {
         throw new Error('Server error')
       }
@@ -47,29 +46,13 @@ export default function LabelWrapper () {
   
 
       if(labelsFromDb.length === 0)  {
-        // console.log(lbl)
         allFiles = lbl
       } else {
         const restructureData = buildDisplayObject(labelsFromDb, true)
-        allFiles = [...lbl, ...restructureData]
+        allFiles = Object.assign(lbl, restructureData)
         console.log(allFiles, 'restructureData')
       }
       setLabel(allFiles)
-        // console.log(labelsFromDb, 'data')
-      // s3.listObjects(params, (err, data) => {
-      //   if (err) throw err;
-      //   const labelData = data.Contents.map((dt) => dt.Key.split('/')[1]);
-      //   const mapObject = new Map()
-      //   labelData.map((data) => {
-      //     mapObject[data.split('_')[1]] = data
-      //   })
-
-      //   const sortedLabel = Object.keys(mapObject).map(function (key) {
-      //     return mapObject[key];
-      //   });
-        
-      //   setLabel(sortedLabel)
-      // })
     }
     getLabels()
   }, [])
@@ -78,16 +61,6 @@ export default function LabelWrapper () {
     return dataFromS3.slice(1).map((dt) => dt.Key.split('/')[1]);
   }
 
-  // function buildDisplayObject(dataFromS3) {
-  //   const labelData = extractFileNames(dataFromS3)
-  //   return labelData.map((data) => {
-  //     const mapObject = new Map()
-  //     const key = data.split('_')[1]
-  //     mapObject[key] = data;
-  //     mapObject.status = false;
-  //     return mapObject
-  //   })
-  // }
 
   const getDataFromS3 = async () => {
     try {
@@ -98,8 +71,7 @@ export default function LabelWrapper () {
     }
   }
  
-  const onRead = async () => {
-
+  const listFiles = async () => {
     try {
       let params = {
         TableName: "rushlabel",
@@ -110,20 +82,32 @@ export default function LabelWrapper () {
     } catch (error) {
         return [null, error]
     }
+  };
 
-      // return docClient.scan(params, function (err, data) {
-      //   if (err) {
-      //     console.log(err);
-      //   } else {
-      //     return data;
-      //   }
-      // });
-    };
+  const getParams = (items) => {
+    let params = {
+      endpoint: 'dynamodb.us-east-2.amazonaws.com',
+      TableName: "rushlabel",
+      Key: { id: 1595841350},
+      Item: items
+    }
+   return params
+  }
 
+ const saveLabelledInDB = (items) => {
+    const params = getParams(items)
+    docClient.put(params, function (err, data) {
+      if (err) {
+        console.log(err);
+      } else {
+       console.log('dave to dab', data)
+      }
+  })
+ }
 
   return (
       <div className="left">
-        <Labels label={label}/>
+        <Labels label={label} saveLabelled={saveLabelledInDB}/>
       </div>
   );
 }

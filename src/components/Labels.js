@@ -11,7 +11,7 @@ export default function Labels(props) {
     concluded: false,
     unsure: true,
   })
-  const {label} = props
+  const {label, saveLabelled} = props
 
   function getFields(id) {
     const selectedItem = label.find((lbl, index) => index === id)
@@ -31,11 +31,7 @@ export default function Labels(props) {
   function saveLabelInfo(event) {
     event.preventDefault()
     console.log(selectedLabel)
-    let params = {
-      endpoint: 'dynamodb.us-east-2.amazonaws.com',
-      TableName: "rushlabel",
-      Key: { id: 1595841350},
-      Item: {
+    const items = {
         id: parseInt(selectedLabel.split('_')[1]),
         fileName: selectedLabel,
         part: state.part,
@@ -45,16 +41,9 @@ export default function Labels(props) {
         concluded: state.concluded,
         unsure: state.unsure
       }
-    };
 
-    docClient.put(params, function (err, data) {
-      if (err) {
-        console.log(err);
-      } else {
-       console.log('dave to dab')
-      }
-    });
-  }
+      saveLabelled(items)
+    };
 
   return (
     <div className="SplitPane">
@@ -62,7 +51,8 @@ export default function Labels(props) {
         <ul className="Labels">
         {label.map((lbl, idx) => {
             const k = Object.values(lbl)
-            return <li key={idx}><button onClick={() => getFields(idx)}>{k[0]}</button></li>
+            console.log(k[1])
+        return <li key={idx}><button onClick={() => getFields(idx)}>{k[0]}</button>{k[1] && <span className="status">labelled</span>}</li>
         })}
         </ul>
       </div>
