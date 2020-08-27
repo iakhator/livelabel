@@ -26,7 +26,6 @@ html, body, #root {
   flex-direction: column;
   justify-items: center;
   align-items: center;
-  background: lightblue;
 }
 
 .Labels {

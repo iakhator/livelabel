@@ -38,7 +38,7 @@ export default function LabelWrapper () {
       }
       const [data, err] = await getDataFromS3()
 
-      if(error) {
+      if(err) {
         throw new Error('Server error')
       }
       dataFromS3 = data;
@@ -75,7 +75,7 @@ export default function LabelWrapper () {
     try {
       let params = {
         TableName: "rushlabel",
-        endpoint: 'dynamodb.us-east-2.amazonaws.com',
+        endpoint: 'dynamodb.us-east-2.amazonaws.com'
       };
       const result = await docClient.scan(params).promise()
       return [result.Items, null]
@@ -88,19 +88,26 @@ export default function LabelWrapper () {
     let params = {
       endpoint: 'dynamodb.us-east-2.amazonaws.com',
       TableName: "rushlabel",
-      Key: { id: 1595841350},
-      Item: items
+      Item: items,
+      ReturnValues: 'ALL_OLD'
     }
    return params
   }
 
+  // save labelled values in dynamo
  const saveLabelledInDB = (items) => {
     const params = getParams(items)
     docClient.put(params, function (err, data) {
       if (err) {
         console.log(err);
       } else {
-       console.log('dave to dab', data)
+        const {fileName, concluded} = data.Attributes
+        const id = fileName.split('_', 2)[1]
+        const savedData = Object.assing(label, { [id] : fileName, status: concluded})
+        setLabel(savedData)
+
+        console.log('dave to dab', { [id] : fileName, status: concluded})
+        console.log(label)
       }
   })
  }
