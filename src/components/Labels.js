@@ -1,5 +1,4 @@
 import React, {useState} from 'react';
-import { dynamodb, docClient } from '../config/aws.config';
 
 export default function Labels(props) {
   const [selectedLabel, setSelectedLabel] = useState('');
@@ -50,15 +49,15 @@ export default function Labels(props) {
       <div className="SplitPane-left">
         <ul className="Labels">
         {label.map((lbl, idx) => {
-            const k = Object.values(lbl)
-            console.log(k[1])
-        return <li key={idx}><button onClick={() => getFields(idx)}>{k[0]}</button>{k[1] && <span className="status">labelled</span>}</li>
+          const k = Object.values(lbl)
+          return <li key={idx}><button onClick={() => getFields(idx)}>{k[0]}</button>{k[1] && <span className="status">labelled</span>}</li>
         })}
         </ul>
       </div>
       <div className="SplitPane-right">
+        <h1>Live Label Data</h1>
         <div className="LabelFields">
-
+          {selectedLabel && <p>Curent Item: <strong>{selectedLabel}</strong></p>}
           <div className="form-fields">
             <label htmlFor="part">Part#: </label>
             <input type="text" name="part" value={state.part} onChange={handleChange}/>
@@ -73,17 +72,17 @@ export default function Labels(props) {
           </div>
 
           <div className="form-fields-checks">
-            <div className="form-fields">
+            <div className="form-field">
               <label htmlFor="duplicate">Duplicate: </label>
               <input type="checkbox" name="duplicate" onChange={handleChange} checked={state.duplicate} />
             </div>
 
-            <div className="form-fields">
+            <div className="form-field">
               <label htmlFor="concluded">Concluded: </label>
               <input type="checkbox" name="concluded" onChange={handleChange} checked={state.concluded} />
             </div>
 
-            <div className="form-fields">
+            <div className="form-fiels">
               <label htmlFor="unsure">Unsure: </label>
               <input type="checkbox" name="unsure" onChange={handleChange} checked={state.unsure} />
             </div>
