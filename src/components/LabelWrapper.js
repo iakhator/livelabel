@@ -40,7 +40,7 @@ export default function LabelWrapper () {
       dataFromS3 = data;
       lbl = buildDisplayObject(dataFromS3)
   
-
+      //check db for data
       if(labelsFromDb.length === 0)  {
         allFiles = lbl
       } else {
