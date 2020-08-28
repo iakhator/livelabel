@@ -29,7 +29,6 @@ export default function Labels(props) {
 
   function saveLabelInfo(event) {
     event.preventDefault()
-    console.log(selectedLabel)
     const items = {
         id: parseInt(selectedLabel.split('_')[1]),
         fileName: selectedLabel,
@@ -50,7 +49,6 @@ export default function Labels(props) {
         <ul className="Labels">
         {label.map((lbl, idx) => {
           const k = Object.values(lbl)
-          // console.log(lbl, 'lable')
           return <li key={idx}><button onClick={() => getFields(idx)}>{k[0]}</button>{lbl.status && <span className="status">labelled</span>}</li>
         })}
         </ul>

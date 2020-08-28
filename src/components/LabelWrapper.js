@@ -34,7 +34,7 @@ export default function LabelWrapper () {
       }
       const [data, err] = await getDataFromS3()
 
-      if(error) {
+      if(err) {
         throw new Error('Server error')
       }
       dataFromS3 = data;
@@ -49,7 +49,6 @@ export default function LabelWrapper () {
       }
 
       allFiles = sortByTimestamp(allFiles)
-      console.log(allFiles)
       setLabel(allFiles)
 
       if(isRefresh) {
