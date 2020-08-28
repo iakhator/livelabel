@@ -15,6 +15,7 @@ export default function LabelWrapper () {
       return uniqLabelData.map((data) => {
           const mapObject = new Map()
           const key = data.fileName ? data.fileName.split('_', 2)[1] : data.split('_')[1]
+          mapObject.id = key
           mapObject[key] = data.fileName || data;
           mapObject.status = data.concluded || false;
           return mapObject
@@ -46,6 +47,9 @@ export default function LabelWrapper () {
         const restructureData = buildDisplayObject(labelsFromDb, true)
         allFiles = Object.assign(lbl, restructureData)
       }
+
+      allFiles = sortByTimestamp(allFiles)
+      console.log(allFiles)
       setLabel(allFiles)
 
       if(isRefresh) {
@@ -57,6 +61,10 @@ export default function LabelWrapper () {
 
   const extractFileNames = (dataFromS3) => {
     return dataFromS3.slice(1).map((dt) => dt.Key.split('/')[1]);
+  }
+
+  const sortByTimestamp = (objs) =>{
+    return objs.sort((a,b) => (a.id > b.id) ? 1 : ((b.id > a.id) ? -1 : 0)); 
   }
   
 

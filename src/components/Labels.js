@@ -50,7 +50,8 @@ export default function Labels(props) {
         <ul className="Labels">
         {label.map((lbl, idx) => {
           const k = Object.values(lbl)
-          return <li key={idx}><button onClick={() => getFields(idx)}>{k[0]}</button>{k[1] && <span className="status">labelled</span>}</li>
+          // console.log(lbl, 'lable')
+          return <li key={idx}><button onClick={() => getFields(idx)}>{k[0]}</button>{lbl.status && <span className="status">labelled</span>}</li>
         })}
         </ul>
       </div>
