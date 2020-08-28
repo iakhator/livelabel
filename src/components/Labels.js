@@ -18,14 +18,14 @@ export default function Labels(props) {
     setSelectedLabel(fileName)
   }
 
-    function handleChange(evt) {
-      const value =
-        evt.target.type === "checkbox" ? evt.target.checked : evt.target.value;
-      setState({
-        ...state,
-        [evt.target.name]: value
-      });
-    }
+  function handleChange(evt) {
+    const value =
+      evt.target.type === "checkbox" ? evt.target.checked : evt.target.value;
+    setState({
+      ...state,
+      [evt.target.name]: value
+    });
+  }
 
   function saveLabelInfo(event) {
     event.preventDefault()
@@ -49,14 +49,15 @@ export default function Labels(props) {
         <ul className="Labels">
         {label.map((lbl, idx) => {
           const k = Object.values(lbl)
-          return <li key={idx}><button onClick={() => getFields(idx)}>{k[0]}</button>{lbl.status && <span className="status">labelled</span>}</li>
+          const fileName = k[0].split('.')[0]
+          return <li key={idx}><button onClick={() => getFields(idx)}>{fileName}</button>{lbl.status && <span className="status">labelled</span>}</li>
         })}
         </ul>
       </div>
       <div className="SplitPane-right">
         <h1>Live Label Data</h1>
-        <div className="LabelFields">
-          {selectedLabel && <p>Curent Item: <strong>{selectedLabel}</strong></p>}
+        {selectedLabel ? (<div className="LabelFields">
+          <p>Curent Item: <strong>{selectedLabel}</strong></p>
           <div className="form-fields">
             <label htmlFor="part">Part#: </label>
             <input type="text" name="part" value={state.part} onChange={handleChange} required/>
@@ -87,7 +88,10 @@ export default function Labels(props) {
             </div>
           </div>
            <button type="Submit" disabled={isSaving} onClick={saveLabelInfo}>{isSaving ? 'Saving...' : 'Save'}</button>
-        </div>
+          <div className="label_image">
+            <img src={`${process.env.REACT_APP_S3_URL}/${selectedLabel}`} alt="selectedLabel"/>
+          </div>
+        </div>) : <p style={{textAlign: 'center'}}>Select a file name to label</p>}
       </div>
     </div>
   )
