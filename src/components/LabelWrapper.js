@@ -46,11 +46,9 @@ export default function LabelWrapper () {
         const restructureData = buildDisplayObject(labelsFromDb, true)
         allFiles = Object.assign(lbl, restructureData)
       }
-      console.log(allFiles, 'restructureData')
       setLabel(allFiles)
 
       if(isRefresh) {
-        console.log('refresh')
         setIsRefresh(false)
       }
     }
@@ -100,12 +98,11 @@ export default function LabelWrapper () {
     const params = getParams(items)
     docClient.put(params, function (err, data) {
       if (err) {
-        console.log(err);
+        console.error(err);
         setIsSaving(false)
       } else {
         setIsRefresh(true)
         setIsSaving(false)
-        console.log('dave to dab', data, isRefresh)
       }
   })
  }
