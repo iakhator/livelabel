@@ -10,7 +10,7 @@ export default function Labels(props) {
     concluded: false,
     unsure: true,
   })
-  const {label, saveLabelled} = props
+  const {label, saveLabelled, isSaving} = props
 
   function getFields(id) {
     const selectedItem = label.find((lbl, index) => index === id)
@@ -60,15 +60,15 @@ export default function Labels(props) {
           {selectedLabel && <p>Curent Item: <strong>{selectedLabel}</strong></p>}
           <div className="form-fields">
             <label htmlFor="part">Part#: </label>
-            <input type="text" name="part" value={state.part} onChange={handleChange}/>
+            <input type="text" name="part" value={state.part} onChange={handleChange} required/>
           </div>
           <div className="form-fields">
             <label htmlFor="quantity">Quantity: </label>
-            <input type="text" name="quantity" onChange={handleChange} value={state.quantity}/>
+            <input type="text" name="quantity" onChange={handleChange} value={state.quantity} required/>
           </div>
           <div className="form-fields">
             <label htmlFor="serial">Serial: </label>
-            <input type="text" name="serial" onChange={handleChange} value={state.serial} />
+            <input type="text" name="serial" onChange={handleChange} value={state.serial} required />
           </div>
 
           <div className="form-fields-checks">
@@ -87,7 +87,7 @@ export default function Labels(props) {
               <input type="checkbox" name="unsure" onChange={handleChange} checked={state.unsure} />
             </div>
           </div>
-           <button type="Submit" onClick={saveLabelInfo}>Save</button>
+           <button type="Submit" disabled={isSaving} onClick={saveLabelInfo}>{isSaving ? 'Saving...' : 'Save'}</button>
         </div>
       </div>
     </div>

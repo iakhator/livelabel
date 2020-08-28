@@ -4,27 +4,22 @@ import { s3, params, docClient } from '../config/aws.config';
 
 export default function LabelWrapper () {
   const [label, setLabel] = useState([]);
-  const [isLoading, setIsLoading] = useState(true)
+  const [isRefresh, setIsRefresh] = useState(false)
+  const [isSaving, setIsSaving] = useState(false)
 
   useEffect(() => {
-    function buildDisplayObject(dataFromS3, db=false) {
-      if(db) {
-        return dataFromS3.map(data => {
+     function buildDisplayObject(dataFromS3, db=false) {
+      const labelData = db ? dataFromS3 : extractFileNames(dataFromS3)
+      const uniqLabelData = [...new Set(labelData)];
+    
+      return uniqLabelData.map((data) => {
           const mapObject = new Map()
-           const key = data.fileName.split('_', 2)[1]
-          mapObject[key] = data.fileName;
-          mapObject.status = data.concluded;
-          return mapObject
-        } )
-      }
-      const labelData = extractFileNames(dataFromS3)
-      return labelData.map((data) => {
-          const mapObject = new Map()
-          const key = data.split('_')[1]
-          mapObject[key] = data;
-          mapObject.status = false;
+          const key = data.fileName ? data.fileName.split('_', 2)[1] : data.split('_')[1]
+          mapObject[key] = data.fileName || data;
+          mapObject.status = data.concluded || false;
           return mapObject
       })
+
     }
     
     const getLabels = async () => {
@@ -38,7 +33,7 @@ export default function LabelWrapper () {
       }
       const [data, err] = await getDataFromS3()
 
-      if(err) {
+      if(error) {
         throw new Error('Server error')
       }
       dataFromS3 = data;
@@ -50,17 +45,22 @@ export default function LabelWrapper () {
       } else {
         const restructureData = buildDisplayObject(labelsFromDb, true)
         allFiles = Object.assign(lbl, restructureData)
-        console.log(allFiles, 'restructureData')
       }
+      console.log(allFiles, 'restructureData')
       setLabel(allFiles)
+
+      if(isRefresh) {
+        console.log('refresh')
+        setIsRefresh(false)
+      }
     }
     getLabels()
-  }, [])
+  }, [isRefresh])
 
   const extractFileNames = (dataFromS3) => {
     return dataFromS3.slice(1).map((dt) => dt.Key.split('/')[1]);
   }
-
+  
 
   const getDataFromS3 = async () => {
     try {
@@ -75,7 +75,7 @@ export default function LabelWrapper () {
     try {
       let params = {
         TableName: "rushlabel",
-        endpoint: 'dynamodb.us-east-2.amazonaws.com'
+        endpoint: 'dynamodb.us-east-2.amazonaws.com',
       };
       const result = await docClient.scan(params).promise()
       return [result.Items, null]
@@ -96,25 +96,23 @@ export default function LabelWrapper () {
 
   // save labelled values in dynamo
  const saveLabelledInDB = (items) => {
+    setIsSaving(true)
     const params = getParams(items)
     docClient.put(params, function (err, data) {
       if (err) {
         console.log(err);
+        setIsSaving(false)
       } else {
-        const {fileName, concluded} = data.Attributes
-        const id = fileName.split('_', 2)[1]
-        const savedData = Object.assing(label, { [id] : fileName, status: concluded})
-        setLabel(savedData)
-
-        console.log('dave to dab', { [id] : fileName, status: concluded})
-        console.log(label)
+        setIsRefresh(true)
+        setIsSaving(false)
+        console.log('dave to dab', data, isRefresh)
       }
   })
  }
 
   return (
       <div className="left">
-        <Labels label={label} saveLabelled={saveLabelledInDB}/>
+        <Labels label={label} saveLabelled={saveLabelledInDB} isSaving={isSaving}/>
       </div>
   );
 }
