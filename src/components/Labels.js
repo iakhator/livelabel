@@ -91,7 +91,7 @@ export default function Labels(props) {
           <div className="label_image">
             <img src={`${process.env.REACT_APP_S3_URL}/${selectedLabel}`} alt="selectedLabel"/>
           </div>
-        </div>) : <p style={{textAlign: 'center'}}>Select a file name to label</p>}
+        </div>) : <p style={{textAlign: 'center'}}>Select a file to label</p>}
       </div>
     </div>
   )
