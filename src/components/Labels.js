@@ -18,6 +18,10 @@ export default function Labels(props) {
     setSelectedLabel(fileName)
   }
 
+  function handleLive(id) {
+    console.log(id)
+  }
+
   function handleChange(evt) {
     const value =
       evt.target.type === "checkbox" ? evt.target.checked : evt.target.value;
@@ -50,7 +54,7 @@ export default function Labels(props) {
         {label.map((lbl, idx) => {
           const k = Object.values(lbl)
           const fileName = k[0].split('.')[0]
-          return <li key={idx}><button onClick={() => getFields(idx)}>{fileName}</button>{lbl.status && <span className="status">labelled</span>}</li>
+          return <li key={idx}><button onClick={() => getFields(idx)} onFocus={() => handleLive(idx)}>{fileName}</button>{lbl.status && <span className="status">labelled</span>}</li>
         })}
         </ul>
       </div>
