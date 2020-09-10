@@ -8,11 +8,7 @@ export default function LabelWrapper () {
   const [isSaving, setIsSaving] = useState(false)
 
   useEffect(() => {
-    let socket = new WebSocket("ws://localhost:3000");
-    console.log(socket, 'socket')
-    // socket.onopen = function (e) {
-    //   socket.send("My name is John");
-    // };
+
      function buildDisplayObject(dataFromS3, db=false) {
       const labelData = db ? dataFromS3 : extractFileNames(dataFromS3)
       const uniqLabelData = [...new Set(labelData)];
