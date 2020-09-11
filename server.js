@@ -1,8 +1,8 @@
 const io = require('socket.io')();
 
 io.on('connection', (client) => {
-  client.on('subscribeToTimer', (selectedItem) => {
-    io.emit('subscribeToTimer', selectedItem)
+  client.on('labelling', (selectedItem) => {
+    io.emit('labelling', selectedItem)
   });
 });
 

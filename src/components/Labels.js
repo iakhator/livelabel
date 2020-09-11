@@ -16,18 +16,18 @@ export default function Labels(props) {
   const {label, saveLabelled, isSaving} = props
 
   useEffect(() => {
-    socket.on('subscribeToTimer', (item) => {
+    socket.on('labelling', (item) => {
       setItem(item)
-      console.log(item)
+      console.log('i get called', item)
     })
-  }, [item])
+  }, [])
 
   function getFields(id) {
     const selectedItem = label.find((lbl, index) => index === id)
     const fileName = Object.values(selectedItem)[0]
     setSelectedLabel(fileName)
 
-    socket.emit('subscribeToTimer', selectedItem);
+    socket.emit('labelling', selectedItem);
   }
 
   function handleChange(evt) {
@@ -62,7 +62,7 @@ export default function Labels(props) {
         {label.map((lbl, idx) => {
           const k = Object.values(lbl)
           const fileName = k[0].split('.')[0]
-        return <li key={idx}><button onClick={() => getFields(idx)}>{fileName}</button>{lbl.status ? (<span className="status">labelled </span>) : selectedLabel === lbl[item.id] && <span className="status">{item.id} </span> }</li>
+        return <li key={idx}><button onClick={() => getFields(idx)}>{fileName}</button>{lbl.status ? (<span className="status">labelled </span>) : selectedLabel === lbl[item.id] && <span className="status" id="labelling">{item.id}</span> }</li>
         })}
         </ul>
       </div>
