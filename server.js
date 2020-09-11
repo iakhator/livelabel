@@ -1,9 +1,8 @@
 const io = require('socket.io')();
 
 io.on('connection', (client) => {
-  client.on('subscribeToTimer', (interval) => {
-    console.log('client is subscribing to timer with interval ', interval);
-    client.emit('subscribeToTimer', interval)
+  client.on('subscribeToTimer', (selectedItem) => {
+    io.emit('subscribeToTimer', selectedItem)
   });
 });
 

@@ -1,5 +1,6 @@
-import React, {useState} from 'react';
-import { subscribeToTimer } from '../api';
+import React, {useState, useEffect} from 'react';
+import openSocket from 'socket.io-client';
+const socket = openSocket('http://localhost:8000');
 
 export default function Labels(props) {
   const [selectedLabel, setSelectedLabel] = useState('');
@@ -11,18 +12,22 @@ export default function Labels(props) {
     concluded: false,
     unsure: true,
   })
-  const [timestamp, setTimestamp] = useState("no timestamp yet")
+  const [item, setItem] = useState({})
   const {label, saveLabelled, isSaving} = props
+
+  useEffect(() => {
+    socket.on('subscribeToTimer', (item) => {
+      setItem(item)
+      console.log(item)
+    })
+  }, [item])
 
   function getFields(id) {
     const selectedItem = label.find((lbl, index) => index === id)
     const fileName = Object.values(selectedItem)[0]
     setSelectedLabel(fileName)
-    
-    subscribeToTimer((err, timestamp) => {
-      setTimestamp(timestamp)
-      console.log(timestamp, 'timestamp')
-    });
+
+    socket.emit('subscribeToTimer', selectedItem);
   }
 
   function handleChange(evt) {
@@ -57,7 +62,7 @@ export default function Labels(props) {
         {label.map((lbl, idx) => {
           const k = Object.values(lbl)
           const fileName = k[0].split('.')[0]
-        return <li key={idx}><button onClick={() => getFields(idx)}>{fileName}</button>{lbl.status ? (<span className="status">labelled </span>) : selectedLabel === lbl[selectedLabel.split('_')[1]] && <span className="status">{timestamp} </span> }</li>
+        return <li key={idx}><button onClick={() => getFields(idx)}>{fileName}</button>{lbl.status ? (<span className="status">labelled </span>) : selectedLabel === lbl[item.id] && <span className="status">{item.id} </span> }</li>
         })}
         </ul>
       </div>
